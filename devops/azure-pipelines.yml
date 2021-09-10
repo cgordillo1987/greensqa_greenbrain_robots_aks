@@ -1,0 +1,89 @@
+# RUPET Pipeline
+# The TIA - Team!
+
+trigger:
+  - main
+  
+pool:
+  vmImage: $(agentImage)
+
+jobs:
+- job: LoadAgentNode1
+  displayName: Performance1
+  continueOnError: true
+  workspace:
+    clean: outputs
+  steps:
+    - template: products-store.yml
+
+- job: LoadAgentNode2
+  displayName: Performance2
+  continueOnError: true
+  workspace:
+    clean: outputs
+  steps:
+    - template: products-store.yml
+
+- job: LoadAgentNode3
+  displayName: Performance3
+  continueOnError: true
+  workspace:
+    clean: outputs
+  steps:
+    - template: products-store.yml
+
+- job: LoadAgentNode4
+  displayName: Performance4
+  continueOnError: true
+  workspace:
+    clean: outputs
+  steps:
+    - template: products-store.yml
+
+- job: LoadAgentNode5
+  displayName: Performance5
+  continueOnError: true
+  workspace:
+    clean: outputs
+  steps:
+    - template: products-store.yml
+
+- job: LoadAgentNode6
+  displayName: Performance6
+  continueOnError: true
+  workspace:
+    clean: outputs
+  steps:
+    - template: sock-shop.yml
+  
+- job: LoadAgentNode7
+  displayName: Performance7
+  continueOnError: true
+  workspace:
+    clean: outputs
+  steps:
+    - template: sock-shop.yml
+
+- job: LoadAgentNode8
+  displayName: Performance8
+  continueOnError: true
+  workspace:
+    clean: outputs
+  steps:
+    - template: sock-shop.yml
+
+- job: LoadAgentNode9
+  displayName: Performance9
+  continueOnError: true
+  workspace:
+    clean: outputs
+  steps:
+    - template: sock-shop.yml
+
+- job: LoadAgentNode10
+  displayName: Performance10
+  continueOnError: true
+  workspace:
+    clean: outputs
+  steps:
+    - template: sock-shop.yml   

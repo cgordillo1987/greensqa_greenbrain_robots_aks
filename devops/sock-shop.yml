@@ -1,0 +1,67 @@
+# RUPET Pipeline
+# The TIA - Team!
+
+steps:
+
+- task: Xther-Deployment@0  
+  inputs:
+    installDir: '$(Build.SourcesDirectory)/xther/'
+    resources: 'CHR'
+  displayName: 'XTHER install'
+
+- task: PowerShell@2
+  inputs:    
+    targetType: 'inline'
+    script: |
+      $cliEnv = 'mac'
+      if ('$(Agent.OS)' -eq 'Windows_NT')
+      {
+        $cliEnv = 'win'
+      }
+      if ('$(Agent.OS)' -eq 'Linux')
+      {
+        $cliEnv = 'linux'
+      }
+      $destinationFolder = "$(Build.SourcesDirectory)/aimaps/aimaps_cli/$($cliEnv)/Selenium/"
+      if (!(Test-Path -path $destinationFolder)) {New-Item $destinationFolder -Type Directory}
+      Copy-Item '$(Build.SourcesDirectory)/xther/*' $destinationFolder -Force -Recurse
+  displayName: 'Install drivers'
+
+- task: PowerShell@2
+  condition: eq(variables['Agent.OS'], 'Darwin')
+  inputs:    
+    targetType: 'inline'
+    script: |
+      chmod 777 '$(Build.SourcesDirectory)/aimaps/aimaps_cli/mac/Selenium/chromedriver'
+      dotnet aimaps/aimaps_cli/mac/Gsqa.Tools.AiMaps.Console.dll src='maps/sock_shop/sock-shop.aimj'
+  displayName: 'Running robots - MAC'
+
+- task: PowerShell@2
+  condition: eq(variables['Agent.OS'], 'Linux')
+  inputs:    
+    targetType: 'inline'
+    script: |
+      chmod 777 '$(Build.SourcesDirectory)/aimaps/aimaps_cli/linux/Selenium/chromedriver'
+      chmod 777 aimaps/aimaps_cli/linux/Gsqa.Tools.AiMaps.Console.dll
+      dotnet aimaps/aimaps_cli/linux/Gsqa.Tools.AiMaps.Console.dll src='maps/sock_shop/sock-shop.aimj'
+  displayName: 'Running robots - Linux'
+
+- task: PowerShell@2  
+  condition: eq(variables['Agent.OS'], 'Windows_NT')
+  inputs:    
+    pwsh: true
+    targetType: 'inline'
+    script: |   
+      $1Threads = '1'
+      $2Threads = '1','2'
+      $3Threads = '1','2','3'
+      $4Threads = '1','2','3','4'            
+      $1Threads | ForEach-Object -Parallel {dotnet aimaps/aimaps_cli/win/Gsqa.Tools.AiMaps.Console.dll src='$(Build.SourcesDirectory)/maps/sock_shop/sock-shop.aimj' --VarPerformanceMonitoring.ThreadNum=$_} -ThrottleLimit 4
+      $2Threads | ForEach-Object -Parallel {dotnet aimaps/aimaps_cli/win/Gsqa.Tools.AiMaps.Console.dll src='$(Build.SourcesDirectory)/maps/sock_shop/sock-shop.aimj' --VarPerformanceMonitoring.ThreadNum=$_} -ThrottleLimit 4
+      $3Threads | ForEach-Object -Parallel {dotnet aimaps/aimaps_cli/win/Gsqa.Tools.AiMaps.Console.dll src='$(Build.SourcesDirectory)/maps/sock_shop/sock-shop.aimj' --VarPerformanceMonitoring.ThreadNum=$_} -ThrottleLimit 4
+      $4Threads | ForEach-Object -Parallel {dotnet aimaps/aimaps_cli/win/Gsqa.Tools.AiMaps.Console.dll src='$(Build.SourcesDirectory)/maps/sock_shop/sock-shop.aimj' --VarPerformanceMonitoring.ThreadNum=$_} -ThrottleLimit 4
+      $4Threads | ForEach-Object -Parallel {dotnet aimaps/aimaps_cli/win/Gsqa.Tools.AiMaps.Console.dll src='$(Build.SourcesDirectory)/maps/sock_shop/sock-shop.aimj' --VarPerformanceMonitoring.ThreadNum=$_} -ThrottleLimit 4
+      $3Threads | ForEach-Object -Parallel {dotnet aimaps/aimaps_cli/win/Gsqa.Tools.AiMaps.Console.dll src='$(Build.SourcesDirectory)/maps/sock_shop/sock-shop.aimj' --VarPerformanceMonitoring.ThreadNum=$_} -ThrottleLimit 4
+      $2Threads | ForEach-Object -Parallel {dotnet aimaps/aimaps_cli/win/Gsqa.Tools.AiMaps.Console.dll src='$(Build.SourcesDirectory)/maps/sock_shop/sock-shop.aimj' --VarPerformanceMonitoring.ThreadNum=$_} -ThrottleLimit 4
+      $1Threads | ForEach-Object -Parallel {dotnet aimaps/aimaps_cli/win/Gsqa.Tools.AiMaps.Console.dll src='$(Build.SourcesDirectory)/maps/sock_shop/sock-shop.aimj' --VarPerformanceMonitoring.ThreadNum=$_} -ThrottleLimit 4
+  displayName: 'Running robots - WIN'
